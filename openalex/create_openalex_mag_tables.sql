@@ -25,7 +25,7 @@
 -- Added iso3166_code
 -- 
 -- 
-CREATE TABLE IF NOT EXISTS oa_core.affiliations (
+CREATE TABLE IF NOT EXISTS oamag_core.affiliations (
 affiliation_id bigint PRIMARY KEY,
 rank integer CHECK (rank > 0),
 normalized_name varchar,
@@ -55,13 +55,13 @@ created_date varchar NOT NULL
 --
 -- Added orcid
 --
-CREATE TABLE IF NOT EXISTS oa_core.authors (
+CREATE TABLE IF NOT EXISTS oamag_core.authors (
 author_id bigint PRIMARY KEY,
 rank integer CHECK (rank > 0),
 normalized_name varchar,
 display_name varchar,
 orcid varchar,
-last_known_affiliation_id bigint REFERENCES oa_core.affiliations(affiliation_id),
+last_known_affiliation_id bigint REFERENCES oamag_core.affiliations(affiliation_id),
 paper_count bigint,
 citation_count bigint,
 created_date varchar NOT NULL
@@ -85,7 +85,7 @@ created_date varchar NOT NULL
 --
 -- is_in_doaj is the paper in the doaj collection of open-access
 -- journals
-CREATE TABLE IF NOT EXISTS oa_core.journals (
+CREATE TABLE IF NOT EXISTS oamag_core.journals (
 journal_id bigint PRIMARY KEY,
 rank integer CHECK (rank > 0),
 normalized_name varchar,
@@ -107,7 +107,7 @@ created_date varchar NOT NULL
 -- changed conference_series_id type to bigint
 --
 -- rank is no longer updated by OpenAlex
-CREATE TABLE IF NOT EXISTS oa_core.conference_series (
+CREATE TABLE IF NOT EXISTS oamag_core.conference_series (
 conference_series_id bigint PRIMARY KEY,
 rank integer CHECK (rank > 0),
 normalized_name varchar,
@@ -121,7 +121,7 @@ created_date varchar NOT NULL
 -- changed field_of_study_id type to bigint
 --
 -- rank is no longer updated by OpenAlex
-CREATE TABLE IF NOT EXISTS oa_core.fields_of_study (
+CREATE TABLE IF NOT EXISTS oamag_core.fields_of_study (
 field_of_study_id bigint PRIMARY KEY,
 rank bigint CHECK (rank > 0),
 normalized_name varchar,
@@ -139,11 +139,11 @@ created_date varchar NOT NULL
 -- changed conference_instance_id type to bigint
 --
 -- changed conference_series_id type to bigint
-CREATE TABLE IF NOT EXISTS oa_core.conference_instances (
+CREATE TABLE IF NOT EXISTS oamag_core.conference_instances (
 conference_instance_id bigint PRIMARY KEY,
 normalized_name varchar,
 display_name varchar,
-conference_series_id bigint REFERENCES oa_core.conference_series(conference_series_id),
+conference_series_id bigint REFERENCES oamag_core.conference_series(conference_series_id),
 location varchar,
 official_url varchar,
 start_date varchar,
@@ -180,7 +180,7 @@ created_date varchar NOT NULL
 --
 -- added oa_status
 --
-CREATE TABLE IF NOT EXISTS oa_core.papers (
+CREATE TABLE IF NOT EXISTS oamag_core.papers (
 paper_id bigint PRIMARY KEY,
 rank integer CHECK (rank > 0),
 doi varchar,
@@ -192,9 +192,9 @@ book_title varchar,
 year integer,
 date timestamp,
 publisher varchar,
-journal_id bigint REFERENCES oa_core.journals(journal_id),
-conference_series_id bigint REFERENCES oa_core.conference_series(conference_series_id),
-conference_instance_id bigint REFERENCES oa_core.conference_instances(conference_instance_id),
+journal_id bigint REFERENCES oamag_core.journals(journal_id),
+conference_series_id bigint REFERENCES oamag_core.conference_series(conference_series_id),
+conference_instance_id bigint REFERENCES oamag_core.conference_instances(conference_instance_id),
 volume varchar,
 issue varchar,
 first_page varchar,
@@ -215,8 +215,8 @@ created_date varchar NOT NULL
 -- changed paper_id type to bigint
 --
 -- 
-CREATE TABLE IF NOT EXISTS oa_core.paper_resources (
-paper_id bigint REFERENCES oa_core.papers(paper_id),
+CREATE TABLE IF NOT EXISTS oamag_core.paper_resources (
+paper_id bigint REFERENCES oamag_core.papers(paper_id),
 resource_type integer,
 resource_url varchar,
 source_url varchar,
@@ -229,10 +229,10 @@ relationship_type integer
 -- changed field_of_study_id1 type to bigint
 --
 -- changed field_of_study_id2 type to bigint
-CREATE TABLE IF NOT EXISTS oa_core.related_field_of_study (
-field_of_study_id1 bigint REFERENCES oa_core.fields_of_study(field_of_study_id),
+CREATE TABLE IF NOT EXISTS oamag_core.related_field_of_study (
+field_of_study_id1 bigint REFERENCES oamag_core.fields_of_study(field_of_study_id),
 type1 varchar,
-field_of_study_id2 bigint REFERENCES oa_core.fields_of_study(field_of_study_id),
+field_of_study_id2 bigint REFERENCES oamag_core.fields_of_study(field_of_study_id),
 type2 varchar,
 rank numeric
 );
@@ -245,8 +245,8 @@ rank numeric
 -- added language_code
 --
 -- oai_pmh_id
-CREATE TABLE IF NOT EXISTS oa_core.paper_urls (
-paper_id bigint REFERENCES oa_core.papers(paper_id),
+CREATE TABLE IF NOT EXISTS oamag_core.paper_urls (
+paper_id bigint REFERENCES oamag_core.papers(paper_id),
 source_type integer,
 source_url varchar,
 language_code varchar,
@@ -256,8 +256,9 @@ oai_pmh_id varchar
 
 -- Modifications:
 -- changed paper_id type to bigint
-CREATE TABLE IF NOT EXISTS oa_core.paper_abstract_inverted_index (
-paper_id bigint REFERENCES oa_core.papers(paper_id),
+CREATE TABLE IF NOT EXISTS oamag_core.paper_abstract_inverted_index (
+--paper_id bigint REFERENCES oamag_core.papers(paper_id),
+paper_id bigint,
 indexed_abstract varchar
 );
 
@@ -265,11 +266,14 @@ indexed_abstract varchar
 -- changed paper_id type to bigint
 --
 -- changed author_sequence_number type to integer
-CREATE TABLE IF NOT EXISTS oa_core.paper_author_affiliations (
-paper_id bigint REFERENCES oa_core.papers(paper_id),
-author_id bigint REFERENCES oa_core.authors(author_id),
-affiliation_id bigint REFERENCES oa_core.affiliations(affiliation_id),
-author_sequence_number integer CHECK (author_sequence_number > 0),
+CREATE TABLE IF NOT EXISTS oamag_core.paper_author_affiliations (
+--paper_id bigint REFERENCES oamag_core.papers(paper_id),
+paper_id bigint,
+--author_id bigint REFERENCES oamag_core.authors(author_id),
+author_id bigint,
+--affiliation_id bigint REFERENCES oamag_core.affiliations(affiliation_id),
+affiliation_id bigint,
+author_sequence_number integer CHECK (author_sequence_number >= 0),
 original_author varchar,
 original_affiliation varchar
 );
@@ -281,9 +285,11 @@ original_affiliation varchar
 -- changed paper_id type to bigint
 --
 -- changed paper_reference_id type to bigint
-CREATE TABLE IF NOT EXISTS oa_core.paper_citation_contexts (
-paper_id bigint REFERENCES oa_core.papers(paper_id),
-paper_reference_id bigint REFERENCES oa_core.papers(paper_id),
+CREATE TABLE IF NOT EXISTS oamag_core.paper_citation_contexts (
+--paper_id bigint REFERENCES oamag_core.papers(paper_id),
+paper_id bigint,
+--paper_reference_id bigint REFERENCES oamag_core.papers(paper_id),
+paper_reference_id bigint,
 citation_context varchar
 );
 
@@ -291,15 +297,17 @@ citation_context varchar
 -- changed paper_id type to bigint
 --
 -- changed field_of_study_id type to bigint
-CREATE TABLE IF NOT EXISTS oa_core.paper_fields_of_study (
-paper_id bigint REFERENCES oa_core.papers(paper_id),
-field_of_study_id bigint REFERENCES oa_core.fields_of_study(field_of_study_id),
+CREATE TABLE IF NOT EXISTS oamag_core.paper_fields_of_study (
+--paper_id bigint REFERENCES oamag_core.papers(paper_id),
+paper_id bigint,
+--field_of_study_id bigint REFERENCES oamag_core.fields_of_study(field_of_study_id),
+field_of_study_id bigint,
 score numeric
 );
 
 -- Note: The paper_languages table does not exist in OpenAlex MAG
---CREATE TABLE IF NOT EXISTS oa_core.paper_languages (
---paper_id varchar REFERENCES oa_core.papers(paper_id),
+--CREATE TABLE IF NOT EXISTS oamag_core.paper_languages (
+--paper_id varchar REFERENCES oamag_core.papers(paper_id),
 --language_code varchar
 --);
 
@@ -307,9 +315,11 @@ score numeric
 -- changed paper_id type to bigint
 --
 -- changed recommended_paper_id type to bigint
-CREATE TABLE IF NOT EXISTS oa_core.paper_recommendations (
-paper_id bigint REFERENCES oa_core.papers(paper_id),
-recommended_paper_id bigint REFERENCES oa_core.papers(paper_id),
+CREATE TABLE IF NOT EXISTS oamag_core.paper_recommendations (
+--paper_id bigint REFERENCES oamag_core.papers(paper_id),
+paper_id bigint,
+--recommended_paper_id bigint REFERENCES oamag_core.papers(paper_id),
+recommended_paper_id bigint,
 score numeric
 );
 
@@ -317,18 +327,20 @@ score numeric
 -- changed paper_id type to bigint
 --
 -- changed paper_reference_id type to bigint
-CREATE TABLE IF NOT EXISTS oa_core.paper_references (
-paper_id bigint REFERENCES oa_core.papers(paper_id),
-paper_reference_id bigint REFERENCES oa_core.papers(paper_id)
+CREATE TABLE IF NOT EXISTS oamag_core.paper_references (
+--paper_id bigint REFERENCES oamag_core.papers(paper_id),
+paper_id bigint,
+--paper_reference_id bigint REFERENCES oamag_core.papers(paper_id)
+paper_reference_id bigint
 );
 
 -- Modifications:
 -- changed field_of_study_id type to bigint
 --
 -- changed child_field_of_study_id type to bigint
-CREATE TABLE IF NOT EXISTS oa_core.field_of_study_children (
-field_of_study_id bigint REFERENCES oa_core.fields_of_study(field_of_study_id),
-child_field_of_study_id bigint REFERENCES oa_core.fields_of_study(field_of_study_id)
+CREATE TABLE IF NOT EXISTS oamag_core.field_of_study_children (
+field_of_study_id bigint REFERENCES oamag_core.fields_of_study(field_of_study_id),
+child_field_of_study_id bigint REFERENCES oamag_core.fields_of_study(field_of_study_id)
 );
 
 
